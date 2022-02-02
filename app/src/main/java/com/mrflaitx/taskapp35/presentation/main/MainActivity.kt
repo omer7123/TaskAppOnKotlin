@@ -85,8 +85,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
         binding.searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                viewModel.getItem(Integer.parseInt(query))
                 if (!query.isNullOrEmpty()) {
+                    viewModel.getItem(Integer.parseInt(query))
                     viewModel.shopItem.observe(this@MainActivity) {
                         Toast.makeText(this@MainActivity, it.toString(), Toast.LENGTH_SHORT).show()
                         Log.e("ololo", it.toString())
