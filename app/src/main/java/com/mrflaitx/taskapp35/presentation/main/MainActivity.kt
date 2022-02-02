@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -27,11 +28,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         initListeners()
         setupRecyclerView()
         initObserves()
-
     }
 
     private fun setupRecyclerView() {
-
         with(binding.mainRv) {
             adapterShop = ShopListAdapter()
             adapter = adapterShop
@@ -41,7 +40,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
         }
         setupSwipeListener(binding.mainRv)
-
     }
 
 
@@ -82,13 +80,25 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private fun initListeners() {
         binding.fabBtn.setOnClickListener {
-            val intent = Intent(this,AddActivity::class.java)
+            val intent = Intent(this, AddActivity::class.java)
             startActivity(intent)
         }
+        binding.searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                viewModel.getItem(Integer.parseInt(query))
+                if (!query.isNullOrEmpty()) {
+                    viewModel.shopItem.observe(this@MainActivity) {
+                        Toast.makeText(this@MainActivity, it.toString(), Toast.LENGTH_SHORT).show()
+                        Log.e("ololo", it.toString())
+                    }
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return true
+            }
+
+        })
     }
-
-//    private fun addShopItemfun() {
-//        viewModel.addShopItem(ShopItem("Potato", 2, false, 1))
-//    }
-
 }

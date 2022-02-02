@@ -2,26 +2,18 @@ package com.mrflaitx.taskapp35.data
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.mrflaitx.taskapp35.domain.ShopItem
 import com.mrflaitx.taskapp35.domain.ShopListRepository
 import com.mrflaitx.taskapp35.App
 
 object ShopListRepositoryImpl : ShopListRepository {
-
-//    private val shopListLD = MutableLiveData<List<ShopItem>>()
-//    private val shopList = sortedSetOf<ShopItem>({o1,o2 -> o1.id.compareTo(o2.id)})
-
+    private lateinit var shopItem: ShopItem
     private var autoIncrementId = 0
     private val mapper = ShopListMapper()
-//    init {
-//        for (i in 0 until 100){
-//            val item = ShopItem ("Name $i",i,true)
-//            addShopItem(item)
-//        }
-//    }
 
-    override fun addShopItem(shopItem: ShopItem) {
+    override suspend fun addShopItem(shopItem: ShopItem) {
         if (shopItem.id == ShopItem.UNDEFINED_ID) {
             shopItem.id = autoIncrementId++
         }
@@ -32,7 +24,7 @@ object ShopListRepositoryImpl : ShopListRepository {
 //        Log.e("TAG", "addShopItem: $shopItem")
     }
 
-    override fun deleteShopItem(shopItem: ShopItem) {
+    override suspend fun deleteShopItem(shopItem: ShopItem) {
 //        shopList.remove(shopItem)
 //        updateList()
         App.appDataBase.shopListDao().deleteShopItem(mapper.mapEntityToDBModel(shopItem))
@@ -46,32 +38,24 @@ object ShopListRepositoryImpl : ShopListRepository {
 
     override fun getShopList(): LiveData<List<ShopItem>> = Transformations.map(
         App.appDataBase.shopListDao().getShopList()
-    ){
+    ) {
         mapper.mapListDbModelToListEntity(it)
     }
-
 
 
 //    private fun updateList() {
 //        shopListLD.value = shopList.toList()
 //    }
 
-    override fun getShopItem(shopItemId: Int): ShopItem {
+    override suspend fun getShopItem(shopItemId: Int): ShopItem {
 //        return shopList.find { shopItem ->
 //            shopItem.id == shopItemId
 //        } ?: throw RuntimeException("Element with id $shopItemId not found")
-        return mapper.mapDBModelToEntity(App.appDataBase.shopListDao().getShopItem(shopItemId))
+        if (App.appDataBase.shopListDao().getShopItem(shopItemId) != null) {
+            shopItem = mapper.mapDBModelToEntity(App.appDataBase.shopListDao().getShopItem(shopItemId))
+        }else{
+            shopItem = ShopItem(100000, "Не найден",0,true)
+        }
+        return shopItem
     }
-
-    //Example elvis
-//    val message = getMessage() ?: "empty"
-//    if (!getMessage().isEmpty){
-//         message = getMessage()
-//    }else {
-//        message = "empty"
-//    }
-//     fun getMessage(): String? {
-//        return null
-//    }
-
 }

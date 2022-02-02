@@ -13,9 +13,6 @@ class AddActivity : AppCompatActivity(R.layout.activity_add) {
     private lateinit var binding: ActivityAddBinding
     private val viewModel: AddViewModel by viewModels()
 
-    private val repository = ShopListRepositoryImpl
-
-    private val addShopItemUseCase = AddShopItemUseCase(repository)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +25,7 @@ class AddActivity : AppCompatActivity(R.layout.activity_add) {
                 0,
                 true,
                 )
-            addShopItemUseCase.addShopItem(shopItem)
+            viewModel.addShopItem(shopItem)
             finish()
         }
     }
